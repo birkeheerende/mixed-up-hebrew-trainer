@@ -1,11 +1,12 @@
 package vokabeltrainer.tonionlayout;
 
 /*
- * Copyright (c) 2020, Birke Heeren All rights reserved.
+ * Copyright (c) 2023, Birke Heeren All rights reserved.
+ * Original name: tonionlayout in package de.copepod
  * Use only at own risk.
  *
- * TOnion Project
- * Version 3.0: 20 July 2020
+ * swing-easy project
+ * Version 1.0: 2023-11-11
  */
 import java.awt.AWTError;
 import java.awt.Component;
@@ -25,22 +26,23 @@ import javax.swing.JViewport;
  * <p>
  * <code>TotemLayout</code>, <code>TrainLayout</code> and
  * <code>BullsEyeLayout</code> work together like layers of an onion. They stack
- * into each other and are called TOnionLayout. TOnionLayout was developed to
+ * into each other and are called swing-easy-layout. swing-easy-layout was developed to
  * layout forms and data masks. By using minimum and maximum size the layout
- * will resize to fit the available space. The components inside TOnionLayout
+ * will resize to fit the available space. The components inside swing-easy-layout
  * only have to fit together approximately, the layout will align the components
- * to look neatly by itself. <code>BullsEyeLayout</code> will give the component
- * the maximal possible width and height.
+ * to look neatly by itself. 
  * <p>
- * Even though TOnionLayout is done top-down each layer inquires about the
+ * <code>BullsEyeLayout</code> will give the component the maximal possible width and height.
+ * <p>
+ * Even though swing-easy-layout is done top-down, each layer inquires about the
  * minimum and maximum sizes of all its components. To acquire a good
  * performance each layer caches the overall minimum and maximum size of its
- * components. Therefore BullsEyeLayout can not be shared. Adding or removing a
- * component invalidates the cache of the layout and all TOnionLayouts above it.
+ * components. Therefore swing-easy-layout can not be shared. Adding or removing a
+ * component invalidates the cache of the layout and all swing-easy-layout above it.
  * <p>
- * All first components inside a TOnionLayout must have a minimum and maximum
+ * All first components inside a swing-easy-layout must have a minimum and maximum
  * size set for the layout to function properly, otherwise minimum and maximum
- * sizes are estimated. TOnionLayers that change between filled and empty should
+ * sizes are estimated. swing-easy-layout layers that change between filled and empty should
  * have a minimum and maximum size set, which is only used when empty.
  * <p>
  * JButtons should be wrapped with a JPanel that has a FlowLayout. The minimum
@@ -49,16 +51,15 @@ import javax.swing.JViewport;
  * JTables should be wrapped with a JPanel that has a BorderLayout and be added
  * to the center component. The minimum and maximum sizes are set on the JPanel.
  * <p>
- * TOnionLayout can be placed inside a JScrollPane. If the window size is
- * deceased TOnionLayout will shrink to its minimum size before the scroll bars
+ * swing-easy-layout can be placed inside a JScrollPane. If the window size is
+ * deceased swing-easy-layout will shrink to its minimum size before the scroll bars
  * appear.
  * <p>
- * TOnionLayout corrects inconsistencies of minimum and maximum sizes with
+ * swing-easy-layout corrects inconsistencies of minimum and maximum sizes with
  * maximum = minimum;
  *
  * @author Birke Heeren
- * @since private
- * @version BullsEyeLayout 3.1 (revised 18.September.2023, released 20. July 2020)
+ * @version BullsEyeLayout 1.0
  */
 
 public class BullsEyeLayout
@@ -73,7 +74,7 @@ public class BullsEyeLayout
    /**
     * BullsEyeLayout remembers the minimum size of its components. Adding or
     * deleting a component causes the minimum size to be recalculated. The
-    * update is passed up the TOnion layers to the outside, therefore
+    * update is passed up the swing-easy-layout layers to the outside, therefore
     * BullsEyeLayout must know the component it is assigned to. BullsEyeLayout
     * can not be shared between components.
     */
@@ -95,14 +96,14 @@ public class BullsEyeLayout
    private LayoutMode mode;
 
    /**
-    * Creates a BullsEyeLayout.
+    * Creates a BullsEyeLayout, no test.
     * 
     * @param self
     *           the container to be laid out
     */
    public BullsEyeLayout(Container self)
    {
-      this(self, "none", LayoutMode.NOTEST);
+      this(self, "", LayoutMode.NOTEST);
    }
 
    /**
@@ -116,7 +117,7 @@ public class BullsEyeLayout
     */
    public BullsEyeLayout(Container self, String testname)
    {
-      this(self, testname, LayoutMode.TEST_BULLS_EYE);
+      this(self, testname, LayoutMode.TEST);
    }
 
    /**
@@ -153,16 +154,11 @@ public class BullsEyeLayout
       {
          checkContainer(self);
          int ncomponents = self.getComponentCount();
-         if (ncomponents == 0)
-         {
-            dimMin = null;
-            return null;
-         }
          if (ncomponents > 1)
          {
-            throw new AWTError("BullsEyeLayout can hold only one component");
+            throw new AWTError("ExpanderLayout can hold only one component");
          }
-         if (ncomponents == 1)
+         if (ncomponents == 0)
          {
             if (self.getMinimumSize() != null)
             {
@@ -181,132 +177,7 @@ public class BullsEyeLayout
             }
          }
 
-         if (self.getParent() instanceof JViewport)
-         {
-            return this.maximumLayoutSize(self);
-         }
-
-         Insets insets = self.getInsets();
-         int w;
-         int h;
-
-         h = self.getHeight() - (insets.top + insets.bottom);
-         w = self.getWidth() - (insets.left + insets.right);
-
-         int hmin = 0;
-         int hmax = Integer.MAX_VALUE;
-         int wmin = 0;
-         int wmax = Integer.MAX_VALUE;
-         Component comp = self.getComponent(0);
-         Dimension dmin;
-         Dimension dmax;
-         /*
-          * In case Component is Container with Layout instance of TrainLayout,
-          * TotemLayout or BullsEyeLayout the dimensions derived by content - if
-          * any - should override given Dimensions. Only when there is no
-          * content the given Dimensions should be used.
-          */
-         if (comp instanceof Container && (((Container) comp)
-               .getLayout() instanceof TotemLayout
-               || ((Container) comp).getLayout() instanceof TrainLayout))
-         {
-            Dimension dminContent = ((LayoutManager2) ((Container) comp)
-                  .getLayout()).minimumLayoutSize((Container) comp);
-            if (dminContent != null)
-               dmin = dminContent;
-            else
-               dmin = comp.getMinimumSize();
-
-            Dimension dmaxContent = ((LayoutManager2) ((Container) comp)
-                  .getLayout()).maximumLayoutSize((Container) comp);
-            if (dmaxContent != null)
-               dmax = dmaxContent;
-            else
-               dmax = comp.getMaximumSize();
-         }
-         else if (((Container) comp).getLayout() instanceof BullsEyeLayout)
-         {
-            Dimension dminContent = ((LayoutManager2) ((Container) comp)
-                  .getLayout()).minimumLayoutSize((Container) comp);
-            if (dminContent != null)
-               dmin = dminContent;
-            else
-               dmin = comp.getMinimumSize();
-            dmax = comp.getMaximumSize();
-         }
-         else
-         {
-            dmin = comp.getMinimumSize();
-            dmax = comp.getMaximumSize();
-         }
-
-         // MINIMUM
-         if (dmin != null)
-         {
-            if (dmin.height > hmin)
-               hmin = dmin.height; // minheight is maximized
-            if (dmin.width > wmin)
-               wmin = dmin.width; // minwidth is maximized
-         }
-         else // minimum was not set on innermost layer
-         {
-            hmin = h;
-            wmin = w;
-         }
-
-         // MAXIMUM
-         if (dmax != null)
-         {
-            if (dmax.height < hmax)
-               hmax = dmax.height; // maxheight is minimized
-            if (dmax.width < wmax)
-               wmax = dmax.width; // maxwidth is minimized
-         }
-         else // maximum was not set on innermost layer
-         {
-            hmax = h;
-            wmax = w;
-         }
-
-         // height
-         if (hmin > hmax)
-         {
-            // error correction
-            hmax = hmin;
-         }
-
-         if (hmax != Integer.MAX_VALUE)
-         {
-            if (h <= hmin)
-               h = hmin;
-            else if (hmax < h)
-               h = hmax;
-            // else h = h;
-         }
-         else if (h < hmin)
-            h = hmin;
-         // else h = h;
-
-         // width
-         if (wmin > wmax)
-         {
-            // error correction
-            wmax = wmin;
-         }
-
-         if (wmax != Integer.MAX_VALUE)
-         {
-            if (w <= wmin)
-               w = wmin;
-            else if (wmax < w)
-               w = wmax;
-            // else w = w;
-         }
-         else if (w < wmin)
-            w = wmin;
-         // else w = w;
-
-         return new Dimension(w, h);
+         return this.maximumLayoutSize(self);
       }
    }
 
@@ -469,7 +340,7 @@ public class BullsEyeLayout
     * object.
     * <p>
     * The component in a BullsEyeLayout is given the maximal height and width
-    * within its minium and maximum dimensions range. If the available space is
+    * within its minimum and maximum dimensions range. If the available space is
     * larger than needed by the component, then the component is placed in the
     * center. If the available space is smaller than needed by the component,
     * then the component is placed at the top respectively left and some part of
@@ -629,7 +500,7 @@ public class BullsEyeLayout
 
          comp.setBounds(Math.max(x, deltaX), Math.max(y, deltaY), w, h);
 
-         if (LayoutMode.TEST_BULLS_EYE == this.mode)
+         if (LayoutMode.TEST == this.mode)
          {
             System.out.println("");
             System.out.println(testname + " with BullsEyeLayout");
@@ -714,7 +585,7 @@ public class BullsEyeLayout
     * Returns the alignment along the x axis. This specifies how the component
     * would like to be aligned relative to other components. The value should be
     * a number between 0 and 1 where 0 represents alignment along the origin, 1
-    * is aligned the furthest away from the origin, 0.5 is centered, etc.
+    * is aligned the farthest away from the origin, 0.5 is centered, etc.
     */
    @Override
    public float getLayoutAlignmentX(Container self)
@@ -726,7 +597,7 @@ public class BullsEyeLayout
     * Returns the alignment along the y axis. This specifies how the component
     * would like to be aligned relative to other components. The value should be
     * a number between 0 and 1 where 0 represents alignment along the origin, 1
-    * is aligned the furthest away from the origin, 0.5 is centered, etc.
+    * is aligned the farthest away from the origin, 0.5 is centered, etc.
     */
    @Override
    public float getLayoutAlignmentY(Container self)

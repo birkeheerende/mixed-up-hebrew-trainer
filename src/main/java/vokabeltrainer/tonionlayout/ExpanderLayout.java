@@ -1,11 +1,12 @@
 package vokabeltrainer.tonionlayout;
 
 /*
- * Copyright (c) 2020, Birke Heeren All rights reserved.
+ * Copyright (c) 2023, Birke Heeren All rights reserved.
+ * Original name: tonionlayout in package de.copepod
  * Use only at own risk.
  *
- * TOnion Project
- * Version 3.0: 20 July 2020
+ * swing-easy project
+ * Version 1.0: 2023-11-11
  */
 import java.awt.AWTError;
 import java.awt.Component;
@@ -23,26 +24,28 @@ import javax.swing.JViewport;
  * <p>
  * Minimum and maximum sizes are taken into account.
  * <p>
- * <code>ExpanderLayout</code> must be the out most layer of a Java Swing Program.
+ * <code>ExpanderLayout</code> must be the out most layer of a Java Swing Program!
  * <p>
  * <code>TotemLayout</code>, <code>TrainLayout</code> and
  * <code>BullsEyeLayout</code> work together like layers of an onion. They stack
- * into each other and are called TOnionLayout. TOnionLayout was developed to
+ * into each other and are called swing-easy-layout. swing-easy-layout was developed to
  * layout forms and data masks. By using minimum and maximum size the layout
- * will resize to fit the available space. The components inside TOnionLayout
+ * will resize to fit the available space. The components inside swing-easy-layout
  * only have to fit together approximately, the layout will align the components
- * to look neatly by itself. <code>BullsEyeLayout</code> will give the component
+ * to look neatly by itself. 
+ * <p>
+ * <code>BullsEyeLayout</code> will give the component
  * the maximal possible width and height.
  * <p>
- * Even though TOnionLayout is done top-down each layer inquires about the
+ * Even though swing-easy-layout is done top-down each layer inquires about the
  * minimum and maximum sizes of all its components. To acquire a good
  * performance each layer caches the overall minimum and maximum size of its
  * components. Therefore BullsEyeLayout can not be shared. Adding or removing a
- * component invalidates the cache of the layout and all TOnionLayouts above it.
+ * component invalidates the cache of the layout and all swing-easy-layout layers above it.
  * <p>
- * All first components inside a TOnionLayout must have a minimum and maximum
+ * All first components inside a swing-easy-layout must have a minimum and maximum
  * size set for the layout to function properly, otherwise minimum and maximum
- * sizes are estimated. TOnionLayers that change between filled and empty should
+ * sizes are estimated. swing-easy-layout layers that change between filled and empty should
  * have a minimum and maximum size set, which is only used when empty.
  * <p>
  * JButtons should be wrapped with a JPanel that has a FlowLayout. The minimum
@@ -55,7 +58,7 @@ import javax.swing.JViewport;
  * deceased TOnionLayout will shrink to its minimum size before the scroll bars
  * appear.
  * <p>
- * TOnionLayout corrects inconsistencies of minimum and maximum sizes with
+ * swing-easy-layout corrects inconsistencies of minimum and maximum sizes with
  * maximum = minimum;
  *
  * @author Birke Heeren
@@ -109,7 +112,7 @@ public class ExpanderLayout
     */
    public ExpanderLayout(Container self, String testname)
    {
-      this(self, testname, LayoutMode.TEST_EXPANDER);
+      this(self, testname, LayoutMode.TEST);
    }
 
    /**
@@ -347,7 +350,7 @@ public class ExpanderLayout
          Component comp = self.getComponent(0);
          comp.setBounds(x, y, w, h);
 
-         if (LayoutMode.TEST_EXPANDER == this.mode)
+         if (LayoutMode.TEST == this.mode)
          {
             System.out.println("");
             System.out.println(testname + " with ExpanderLayout");
@@ -449,7 +452,7 @@ public class ExpanderLayout
    {
       if (this.self != self)
       {
-         throw new AWTError("BullsEyeLayout can't be shared: " + this.testname);
+         throw new AWTError("ExpanderLayout can't be shared: " + this.testname);
       }
    }
 }

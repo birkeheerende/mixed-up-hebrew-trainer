@@ -1,15 +1,12 @@
 package vokabeltrainer.panels;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
@@ -38,39 +35,25 @@ public class StartPanel extends JPanel
 
    public StartPanel()
    {
-      setLayout(new BorderLayout());
+      setLayout(new BullsEyeLayout(this));
+      
+      JPanel centerVertical = new JPanel();
+      TotemLayout centerlayout = new TotemLayout(centerVertical);
+      centerVertical.setLayout(centerlayout);
+      centerVertical.setOpaque(false);
 
-      JPanel north = new JPanel(new FlowLayout());
-      north.setOpaque(false);
-      JPanel titlePanel = new JPanel();
-      titlePanel.setLayout(new BoxLayout(titlePanel, 1));
-      titlePanel.setOpaque(false);
-
-      JPanel nameWrapper = new JPanel(new FlowLayout());
+      JPanel nameWrapper = new JPanel();
+      BullsEyeLayout bullsEye = new BullsEyeLayout(nameWrapper);
+      nameWrapper.setLayout(bullsEye);
       nameWrapper.setOpaque(false);
-      nameWrapper.setPreferredSize(new Dimension(580, 130));
-      JLabel name = new JLabel("<html>Cerebrummi</html>");
-      name.setPreferredSize(new Dimension(580, 120));
+      JLabel name = new JLabel("<html>"+ Settings.getWindowTitle() +"</html>");
+      name.setMinimumSize(new Dimension(880, 70));
+      name.setMaximumSize(new Dimension(880, 110));
       name.setForeground(Color.WHITE);
-      name.setFont(ApplicationFonts.getHebrewFont(100F));
+      name.setFont(ApplicationFonts.getHebrewFont(70F));
       nameWrapper.add(name);
 
-      JPanel trainerWrapper = new JPanel(new FlowLayout());
-      trainerWrapper.setOpaque(false);
-      trainerWrapper.setPreferredSize(new Dimension(400, 80));
-      JLabel trainer = new JLabel("<html>"
-            + translator.realisticTranslate(Translation.VOKABELTRAINER)
-            + "</html>");
-      trainer.setPreferredSize(new Dimension(355, 70));
-      trainer.setForeground(Color.WHITE);
-      trainer.setFont(ApplicationFonts.getHebrewFont(55F));
-      trainerWrapper.add(trainer);
-
-      titlePanel.add(nameWrapper);
-      titlePanel.add(trainerWrapper);
-
-      north.add(titlePanel);
-      add(north, BorderLayout.NORTH);
+      centerVertical.add(nameWrapper);
       
       JPanel centerWrapper = new JPanel();
       centerWrapper.setOpaque(false);
@@ -86,7 +69,7 @@ public class StartPanel extends JPanel
       center.add(initCopyTablePanel());
       
       centerWrapper.add(center);
-      add(centerWrapper, BorderLayout.CENTER);
+      centerVertical.add(centerWrapper);
       
       JPanel horizontal = new JPanel();
       horizontal.setOpaque(false);
@@ -106,7 +89,8 @@ public class StartPanel extends JPanel
       horizontal.add(filler);
       horizontal.add(schalom);
 
-      add(horizontal, BorderLayout.SOUTH);
+      centerVertical.add(horizontal);
+      add(centerVertical);
    }
 
    private Component initSchabbatModus()

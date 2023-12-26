@@ -122,7 +122,7 @@ public class Settings
 
    public static String getWindowTitle()
    {
-      return "Cerebrummi©";
+      return "Mixed up Hebrew Trainer©";
    }
 
    public static BufferedImage getSound()

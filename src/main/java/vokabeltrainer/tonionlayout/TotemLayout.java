@@ -1,10 +1,11 @@
 package vokabeltrainer.tonionlayout;
 /*
- * Copyright (c) 2020, Birke Heeren All rights reserved.
+ * Copyright (c) 2023, Birke Heeren All rights reserved.
+ * Original name: tonionlayout in package de.copepod
  * Use only at own risk.
  *
- * TOnion Project
- * Version 3.0: 20 July 2020
+ * swing-easy project
+ * Version 1.0: 2023-11-11
  */
 
 import java.awt.AWTError;
@@ -25,21 +26,21 @@ import javax.swing.JViewport;
  * <p>
  * <code>TotemLayout</code>, <code>TrainLayout</code> and
  * <code>BullsEyeLayout</code> work together like layers of an onion. They stack
- * into each other and are called TOnionLayout. TOnionLayout was developed to
+ * into each other and are called swing-easy-layout. swing-easy-layout was developed to
  * layout forms and data masks. By using minimum and maximum size the layout will
- * resize to fit the available space. The components inside TOnionLayout only
+ * resize to fit the available space. The components inside swing-easy-layout only
  * have to fit together approximately, the layout will align the components to
  * look neatly by itself. <code>TotemLayout</code> will give all components the
  * same width and optimize the height of each component.
  * <p>
- * Even though TOnionLayout is done top-down each layer inquires about the
+ * Even though swing-easy-layout is done top-down each layer inquires about the
  * minimum and maximum sizes of all its components. To acquire a good
  * performance each layer caches the overall minimum and maximum size of its
  * components. Therefore TotemLayout can not be shared. Adding or removing a
- * component invalidates the cache of the layout and all TOnion layouts above
+ * component invalidates the cache of the layout and all swing-easy-layouts above
  * it.
  * <p>
- * All first components inside a TOnionLayout must have a minimum and maximum
+ * All first components inside a swing-easy-layout must have a minimum and maximum
  * size set for the layout to function properly, otherwise minimum and maximum
  * sizes are estimated. TOnionLayers that change between filled and empty should
  * have a minimum and maximum size set, which is only used when empty.
@@ -58,8 +59,7 @@ import javax.swing.JViewport;
  * maximum = minimum;
  *
  * @author Birke Heeren
- * @since private
- * @version TotemLayout 3.0 (released 20. July 2020)
+ * @version TotemLayout 1.0
  */
 public class TotemLayout
       implements LayoutManager, LayoutManager2, java.io.Serializable
@@ -83,7 +83,7 @@ public class TotemLayout
    /**
     * TotemLayout remembers the minimum size of its components. Adding or
     * deleting a component causes the minimum size to be recalculated. The
-    * update is passed up the TOnion layers to the outside, therefore
+    * update is passed up the swing-easy-layout layers to the outside, therefore
     * TotemLayout must know the component it is assigned to. TotemLayout can not
     * be shared between components.
     */
@@ -92,7 +92,7 @@ public class TotemLayout
    /**
     * TotemLayout remembers the maximum size of its components. Adding or
     * deleting a component causes the maximum size to be recalculated. The
-    * update is passed up the TOnion layers to the outside, therefore
+    * update is passed up the swing-easy-layout layers to the outside, therefore
     * TrainLayout must know the component it is assigned to. TotemLayout can not
     * be shared between components.
     */
@@ -136,7 +136,7 @@ public class TotemLayout
     */
    public TotemLayout(Container self, String testname)
    {
-      this(self, 0, testname , LayoutMode.TEST_TOTEM);
+      this(self, 0, testname , LayoutMode.TEST);
    }
 
    /**
@@ -170,7 +170,7 @@ public class TotemLayout
     */
    public TotemLayout(Container self, int vgap, String testname)
    {
-      this(self, vgap, testname, LayoutMode.TEST_TOTEM);
+      this(self, vgap, testname, LayoutMode.TEST);
    }
    
    /**
@@ -437,11 +437,11 @@ public class TotemLayout
     * Determines the minimum size of the container argument using this totem
     * layout.
     * <p>
-    * The minimum width of a totem layout is the largest minimum width of all of
+    * The minimum width of a Totem layout is the largest minimum width of all of
     * the components in the container, plus the left and right insets of the
     * self container.
     * <p>
-    * The minimum height of a totem layout is the sum of minimum heights of all
+    * The minimum height of a Totem layout is the sum of minimum heights of all
     * of the components in the container, plus the vertical padding times the
     * number of items minus one, plus the top and bottom insets of the self
     * container.
@@ -808,7 +808,7 @@ public class TotemLayout
             y += hfinal[i] + vgap;
          }
          
-         if (LayoutMode.TEST_TOTEM == this.mode)
+         if (LayoutMode.TEST == this.mode)
          {
             System.out.println("");
             System.out.println(testname + " with TotemLayout");
