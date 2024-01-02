@@ -47,8 +47,8 @@ public class StartPanel extends JPanel
       nameWrapper.setLayout(bullsEye);
       nameWrapper.setOpaque(false);
       JLabel name = new JLabel("<html>"+ Settings.getWindowTitle() +"</html>");
-      name.setMinimumSize(new Dimension(880, 70));
-      name.setMaximumSize(new Dimension(880, 110));
+      name.setMinimumSize(new Dimension(900, 110));
+      name.setMaximumSize(new Dimension(900, 110));
       name.setForeground(Color.WHITE);
       name.setFont(ApplicationFonts.getHebrewFont(70F));
       nameWrapper.add(name);

@@ -7,8 +7,6 @@ import java.awt.Dimension;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
-import java.util.StringJoiner;
-
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.FloatControl;
@@ -641,23 +639,30 @@ public class SettingsPanel extends BackgroundPanelTiled
             overwriteDatabaseNames = dialog.isOverwrite();
             dialog.dispose();
          }
-
-         PathAndFile pathOfFolder = choosesFolderAndFileForSave();
-         if (pathOfFolder != null)
+         
+         if(!overwriteDatabaseNames)
          {
-            new SwingWorker<Void, Void>()
+            Common.saveAllDataAsIs(this);
+         }
+         else
+         {
+            PathAndFile pathOfFolder = Common.choosesFolderAndFileForSave(this);
+            if (pathOfFolder != null)
             {
-
-               @Override
-               protected Void doInBackground() throws Exception
+               new SwingWorker<Void, Void>()
                {
-                  SaveExpressions saver = new SaveExpressions(pathOfFolder);
-                  saver.export(databaseName, overwriteDatabaseNames);
 
-                  return null;
-               }
+                  @Override
+                  protected Void doInBackground() throws Exception
+                  {
+                     SaveExpressions saver = new SaveExpressions(pathOfFolder);
+                     saver.export(databaseName, overwriteDatabaseNames);
 
-            }.execute();
+                     return null;
+                  }
+
+               }.execute();
+            }
          }
       });
 
@@ -681,7 +686,7 @@ public class SettingsPanel extends BackgroundPanelTiled
             dialog.dispose();
          }
 
-         PathAndFile pathOfFolder = choosesFolderAndFileForSave();
+         PathAndFile pathOfFolder = Common.choosesFolderAndFileForSave(this);
          if (pathOfFolder != null)
          {
             new SwingWorker<Void, Void>()
@@ -735,7 +740,7 @@ public class SettingsPanel extends BackgroundPanelTiled
             dialog.dispose();
          }
 
-         PathAndFile pathOfFolder = choosesFolderAndFileForSave();
+         PathAndFile pathOfFolder = Common.choosesFolderAndFileForSave(this);
          if (pathOfFolder != null)
          {
             new SwingWorker<Void, Void>()
@@ -816,12 +821,6 @@ public class SettingsPanel extends BackgroundPanelTiled
             && (path.endsWith(".zip") || path.endsWith(".ZIP"));
    }
 
-   private boolean testIfFileExists(String path)
-   {
-      File folder = new File(path);
-      return folder.exists() && folder.isFile();
-   }
-
    private String choosesFolderForSave()
    {
       JFileChooser folderChooser = new JFileChooser(
@@ -847,100 +846,6 @@ public class SettingsPanel extends BackgroundPanelTiled
             return null;
          }
          return result;
-      }
-      return null;
-   }
-
-   private PathAndFile choosesFolderAndFileForSave()
-   {
-      JFileChooser folderChooser = new JFileChooser(
-            Settings.getExpressionPath());
-      folderChooser.setAcceptAllFileFilterUsed(false);
-      folderChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-
-      int choice = folderChooser.showSaveDialog(this);
-
-      if (JFileChooser.APPROVE_OPTION == choice)
-      {
-         String splitter = "\\" + File.separator;
-         String[] foldersAndFile = folderChooser.getSelectedFile().getPath()
-               .split(splitter);
-         PathAndFile pathAndFile = new PathAndFile();
-         StringJoiner joiner = new StringJoiner(splitter);
-         for (int i = 0; i < foldersAndFile.length; i++)
-         {
-            if (i == foldersAndFile.length - 1)
-            {
-               pathAndFile.setFile(foldersAndFile[i]);
-            }
-            else
-            {
-               joiner.add(foldersAndFile[i]);
-            }
-         }
-         pathAndFile.setPath(joiner.toString());
-
-         if (!testIfFolderExists(pathAndFile.getPath()))
-         {
-            JOptionPane.showMessageDialog(this, translator.realisticTranslate(
-                  Translation.DER_GEWAEHLTE_ORDNER_EXISTIERT_NICHT_) + "\n"
-                  + pathAndFile.getPath() + "\n"
-                  + translator.realisticTranslate(
-                        Translation.BITTE_WAEHLEN_SIE_EINEN_EXISTIERENDEN_ORDNER_)
-                  + "\n" + translator.realisticTranslate(Translation.DANKE_),
-                  translator.realisticTranslate(Translation.NACHRICHT),
-                  JOptionPane.CLOSED_OPTION);
-            return null;
-         }
-
-         if (testIfFileExists(pathAndFile.getPathFile()))
-         {
-            int answer = JOptionPane.showConfirmDialog(this,
-                  translator.realisticTranslate(
-                        Translation.DIE_DATEI_EXISTIERT_SCHON)
-                        + "\n"
-                        + translator.realisticTranslate(
-                              Translation.SOLL_SIE_UEBERSCHRIEBEN_WERDEN_),
-                  translator.realisticTranslate(Translation.FRAGE),
-                  JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
-            if (JOptionPane.OK_OPTION != answer)
-            {
-               return null;
-            }
-         }
-
-         if (testIfFileExists(pathAndFile.getPathFile() + ".zip"))
-         {
-            int answer = JOptionPane.showConfirmDialog(this,
-                  translator.realisticTranslate(
-                        Translation.DIE_DATEI_EXISTIERT_SCHON)
-                        + "\n"
-                        + translator.realisticTranslate(
-                              Translation.SOLL_SIE_UEBERSCHRIEBEN_WERDEN_),
-                  translator.realisticTranslate(Translation.FRAGE),
-                  JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
-            if (JOptionPane.OK_OPTION != answer)
-            {
-               return null;
-            }
-         }
-
-         if (testIfFileExists(pathAndFile.getPathFile() + ".ZIP"))
-         {
-            int answer = JOptionPane.showConfirmDialog(this,
-                  translator.realisticTranslate(
-                        Translation.DIE_DATEI_EXISTIERT_SCHON)
-                        + "\n"
-                        + translator.realisticTranslate(
-                              Translation.SOLL_SIE_UEBERSCHRIEBEN_WERDEN_),
-                  translator.realisticTranslate(Translation.FRAGE),
-                  JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
-            if (JOptionPane.OK_OPTION != answer)
-            {
-               return null;
-            }
-         }
-         return pathAndFile;
       }
       return null;
    }

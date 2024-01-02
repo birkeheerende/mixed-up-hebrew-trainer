@@ -122,7 +122,7 @@ public class Settings
 
    public static String getWindowTitle()
    {
-      return "Mixed up Hebrew Trainer©";
+      return "Hebräisch Vokabel Trainer©";
    }
 
    public static BufferedImage getSound()
