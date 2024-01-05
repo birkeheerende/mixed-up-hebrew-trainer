@@ -89,7 +89,7 @@ public final class Common
       return false;
    }
    
-   public static boolean isSchabbatPossible(LocalDate date)
+   public static boolean isItPossiblySchabbat(LocalDate date)
    {
       ZonedDateTime now = ZonedDateTime.now();
       DayOfWeek day = now.getDayOfWeek();

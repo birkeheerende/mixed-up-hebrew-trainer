@@ -44,6 +44,18 @@ public class CerebrummiPreferences
       {
          // nothing
       }
+      
+      try
+      {
+         Preferences preferences = Preferences.userRoot()
+               .node(CerebrummiNodes.getNode());
+         Settings.setChoosenBackupPath(preferences
+               .get(CerebrummiNodes.getChoosenBackupPathNode(), null));
+      }
+      catch (Exception e)
+      {
+         // nothing
+      }
 
       try
       {

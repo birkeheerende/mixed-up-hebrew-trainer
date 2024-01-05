@@ -32,6 +32,11 @@ public class CerebrummiNodes
    {
       return "choosenexpressionpath";
    }
+   
+   public static String getChoosenBackupPathNode()
+   {
+      return "choosenbackuppath";
+   }
 
    public static String getVolumeNode()
    {

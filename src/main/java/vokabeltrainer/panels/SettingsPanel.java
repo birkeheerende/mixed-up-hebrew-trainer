@@ -68,6 +68,8 @@ public class SettingsPanel extends BackgroundPanelTiled
    private JButton deleteDatabaseButton;
    private Translator translator = Common.getTranslator();
    private JCheckBox modus;
+   private JButton folderBackupButton;
+   private JTextArea folderBackupLabel;
 
    public SettingsPanel()
    {
@@ -134,9 +136,52 @@ public class SettingsPanel extends BackgroundPanelTiled
       JPanel panel = new JPanel();
       BullsEyeLayout panelLayout = new BullsEyeLayout(panel);
       panel.setLayout(panelLayout);
-      
-      panel.add(new JLabel("work in progress"));
+
+      JPanel horizontal = new JPanel();
+      TrainLayout horizontalLayout = new TrainLayout(horizontal, 60);
+      horizontal.setLayout(horizontalLayout);
+
+      JPanel vertical1 = new JPanel();
+      TotemLayout vertical1Layout = new TotemLayout(vertical1, 60);
+      vertical1.setLayout(vertical1Layout);
+
+      vertical1.add(initBackupSavePanel());
+
+      horizontal.add(vertical1);
+
+      panel.add(horizontal);
+
       return panel;
+   }
+
+   private Component initBackupSavePanel()
+   {
+      JPanel vertical = new JPanel();
+      TotemLayout verticalLayout = new TotemLayout(vertical, 15);
+      vertical.setLayout(verticalLayout);
+
+      JLabel saverLabel = new JLabel(
+            translator.realisticTranslate(Translation.SPEICHERORT));
+      saverLabel.setFont(ApplicationFonts.getGermanFont(30F));
+      saverLabel.setForeground(ApplicationColors.getGold());
+
+      folderBackupLabel = new JTextArea(Settings.getBackupPath());
+      folderBackupLabel.setFont(ApplicationFonts.getButtonFont());
+      folderBackupLabel.setEditable(false);
+      folderBackupLabel.setBorder(BorderFactory.createTitledBorder(
+            translator.realisticTranslate(Translation.ORDNER)));
+      folderBackupLabel.setMinimumSize(new Dimension(WIDTH*3, 50));
+      folderBackupLabel.setMaximumSize(new Dimension(WIDTH*3, 50));
+
+      folderBackupButton = new JButton(
+            translator.realisticTranslate(Translation.AENDERN));
+      folderBackupButton.setFont(ApplicationFonts.getButtonFont());     
+
+      vertical.add(saverLabel);
+      vertical.add(folderBackupButton);
+      vertical.add(folderBackupLabel);
+
+      return vertical;
    }
 
    private Component initLicencingTab() throws IOException
@@ -317,8 +362,8 @@ public class SettingsPanel extends BackgroundPanelTiled
       folderLabel.setEditable(false);
       folderLabel.setBorder(BorderFactory.createTitledBorder(
             translator.realisticTranslate(Translation.ORDNER)));
-      folderLabel.setMinimumSize(new Dimension(WIDTH, 100));
-      folderLabel.setMaximumSize(new Dimension(WIDTH, 100));
+      folderLabel.setMinimumSize(new Dimension(WIDTH, 50));
+      folderLabel.setMaximumSize(new Dimension(WIDTH, 50));
 
       folderChooserButtonWithoutSaving = new JButton(
             translator.realisticTranslate(Translation.AENDERN));
@@ -574,6 +619,16 @@ public class SettingsPanel extends BackgroundPanelTiled
          }
 
       });
+      
+      folderBackupButton.addActionListener(event -> {
+
+         String pathOfFolder = choosesFolderForBackup();
+         if (pathOfFolder != null)
+         {
+            Settings.setChoosenBackupPath(pathOfFolder);
+            this.folderBackupLabel.setText(Settings.getBackupPath());
+         }
+      });
 
       importButton.addActionListener(event -> {
 
@@ -825,6 +880,35 @@ public class SettingsPanel extends BackgroundPanelTiled
    {
       JFileChooser folderChooser = new JFileChooser(
             Settings.getExpressionPath());
+      folderChooser.setAcceptAllFileFilterUsed(false);
+      folderChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+      int choice = folderChooser.showSaveDialog(this);
+
+      if (JFileChooser.APPROVE_OPTION == choice)
+      {
+         String result = folderChooser.getSelectedFile().getPath();
+         if (!testIfFolderExists(folderChooser.getSelectedFile().getPath()))
+         {
+            JOptionPane.showMessageDialog(this, translator.realisticTranslate(
+                  Translation.DER_GEWAEHLTE_ORDNER_EXISTIERT_NICHT_) + "\n"
+                  + result + "\n"
+                  + translator.realisticTranslate(
+                        Translation.BITTE_WAEHLEN_SIE_EINEN_EXISTIERENDEN_ORDNER_)
+                  + "\n" + translator.realisticTranslate(Translation.DANKE_),
+                  translator.realisticTranslate(Translation.NACHRICHT),
+                  JOptionPane.CLOSED_OPTION);
+            return null;
+         }
+         return result;
+      }
+      return null;
+   }
+   
+   private String choosesFolderForBackup()
+   {
+      JFileChooser folderChooser = new JFileChooser(
+            Settings.getBackupPath());
       folderChooser.setAcceptAllFileFilterUsed(false);
       folderChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 

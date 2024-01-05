@@ -16,6 +16,7 @@ public class Settings
 {
    private static boolean soundOn = true;
    private static String chosenExpressionPath = null;
+   private static String chosenBackupPath = null;
    private static float volume = -20;
    private static boolean letterImagesOn = true;
    private static boolean simpleHebrewInput = true;
@@ -78,6 +79,15 @@ public class Settings
          return System.getProperty("user.home");
       }
       return chosenExpressionPath;
+   }
+   
+   public static String getBackupPath()
+   {
+      if (chosenBackupPath == null)
+      {
+         return System.getProperty("user.home");
+      }
+      return chosenBackupPath;
    }
 
    public static String getExpressionPathFolder()
@@ -222,6 +232,18 @@ public class Settings
                   choosenExpressionPath);
 
       Settings.chosenExpressionPath = choosenExpressionPath;
+   }
+   
+   public static void setChoosenBackupPath(String choosenBackupPath)
+   {
+      Preferences preferences = Preferences
+            .userRoot()
+            .node(CerebrummiNodes.getNode());
+      preferences
+            .put(CerebrummiNodes.getChoosenBackupPathNode(),
+                  choosenBackupPath);
+
+      Settings.chosenBackupPath = choosenBackupPath;
    }
 
    public static void setChosenDatabases(List<Database> chosenDatabases)
